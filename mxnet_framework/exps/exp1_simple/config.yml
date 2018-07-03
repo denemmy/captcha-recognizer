@@ -1,0 +1,79 @@
+RNG_SEED: 777
+SUBTR_MEANS: False
+COLOR_SPACE: 'rgb'
+NORM_COEFF: 1.0
+PREPARE_SIZE: [66, 30]
+INPUT_SHAPE: [60, 27]
+MAX_LABELS: 6
+MIN_LABELS: 4
+CLS_NUM: 36 # 10 digits and 26 characters
+GPU_IDS: [0, 1, 2, 3]
+MAX_DEBUG_IMAGES: 50
+PLOT_GRAPH: True
+TRAIN:
+  EPOCHS: 512
+  SNAPSHOT_PERIOD: 512
+  DISPLAY_ITERS: 2
+  BATCH_SIZE: 64
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp1_simple_train_debug_10'
+  LOADER_WORKERS: 0
+  CSV_PARSER_WORKERS: 0
+  DISTORT:
+    USE_FLIP: False
+    USE_ROTATE: False
+    MAX_ROTATE: 15
+    ROTATE_PROB: 0.3
+    USE_SCALE: True
+    SCALE_PROB: 0.3
+    SCALE_MIN: 0.89
+    SCALE_MAX: 1.125
+    USE_DEFORM: True
+    MAX_DEFORM: 1.2
+    DEFORM_PROB: 0.2
+    USE_CROP: True
+    CROP_REGION: 0.75
+    USE_JPEG: False
+    JPEG_PROB: 0.5
+    USE_BRIGHTNESS: True
+    BRIGHTNESS_PROB: 0.1
+    BRIGHT_MIN_ALPHA: 0.6
+    BRIGHT_MAX_ALPHA: 1.66
+    BRIGHT_MIN_BETA: -0.2
+    BRIGHT_MAX_BETA: 0.2
+    USE_GRAYSCALE: True
+    GRAYSCALE_PROB: 0.2
+    USE_WHITE_BALANCE: True
+    WHITE_BALANCE_PROB: 0.5
+    WHITE_BALANCE_COEFF: 0.02
+    USE_INVERT: True
+    INVERT_PROB: 0.5
+    USE_CHANNEL_SHUFFLE: True
+    CHANNEL_SHUFFLE_PROB: 0.5
+    USE_NOISE: True
+    NOISE_PROB: 0.25
+    NOISE_SIGMA: 0.05
+    USE_LOW_RES: True
+    LOW_RES_PROB: 0.1
+  DATASETS:
+    -
+      DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas/'
+      TYPE: 'CSV_FILE'
+      CSV_FILE: 'train.txt'
+VALIDATION:
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp1_simple_val_debug_8'
+  BATCH_SIZE: 128
+  REPORT_INTERMEDIATE: True
+  INTERVAL: 500
+  DATASETS:
+    -
+      DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas/'
+      TYPE: 'CSV_FILE'
+      CSV_FILE: 'test.txt'
+TEST:
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp1_simple_test_debug_8'
+  BATCH_SIZE: 128
+  DATASETS:
+    -
+      DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas/'
+      TYPE: 'CSV_FILE'
+      CSV_FILE: 'test.txt'

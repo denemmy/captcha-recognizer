@@ -31,7 +31,8 @@ class ClsIter(mx.io.DataIter):
         self._data_shape = (self._channel_num, cfg.INPUT_SHAPE[1], cfg.INPUT_SHAPE[0])
 
         self._provide_data = [(data_name, (self._batch_size,) + self._data_shape)]
-        self._provide_label = [(label_name, (self._batch_size, cfg.MAX_LABELS + 1))]
+        self._provide_label = [('{}_{}'.format(label_name, i),
+                                (self._batch_size, )) for i in range(cfg.MAX_LABELS + 1)]
 
         # make debug directory
         self._debug_imgs = cfg.TRAIN.DEBUG_IMAGES if self._is_train else test_cfg.DEBUG_IMAGES
@@ -175,15 +176,16 @@ class ClsIter(mx.io.DataIter):
         im = convert_color_space(im, self._cfg, inverse=True)
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
 
-        # imname_n = '{}_{}'.format(label, basename(imname))
-        cv2.imwrite(join(self._debug_imgs, imname), im)
+        label_str = '.'.join([str(l) for l in label])
+        imname_n = '{}_{}'.format(label_str, basename(imname))
+        cv2.imwrite(join(self._debug_imgs, imname_n), im)
 
         self._n_debug_images += 1
 
 class MxIterWrapper(mx.io.DataIter):
 
     def __init__(self, input_dataset, cfg, test_cfg=None,
-                 data_name='data', label_name='label', num_workers=0):
+                 data_name='data', label_name='softmax', num_workers=0):
         self._cfg = cfg
         self._test_cfg = test_cfg
         self._is_train = test_cfg is None
@@ -195,7 +197,8 @@ class MxIterWrapper(mx.io.DataIter):
         self._data_shape = (self._channel_num, cfg.INPUT_SHAPE[1], cfg.INPUT_SHAPE[0])
 
         self._provide_data = [(data_name, (self._batch_size,) + self._data_shape)]
-        self._provide_label = [(label_name, (self._batch_size, cfg.MAX_LABELS + 1))]
+        self._provide_label = [('{}{}_label'.format(label_name, i),
+                               (self._batch_size,)) for i in range(cfg.MAX_LABELS + 1)]
 
         self._input_dataset = input_dataset
         self._num_workers = num_workers
@@ -224,7 +227,11 @@ class MxIterWrapper(mx.io.DataIter):
         assert batch_data.shape[0] == batch_label.shape[0]
         n_samples = batch_data.shape[0]
 
-        data_batch = mx.io.DataBatch([batch_data], [batch_label], pad=(self._batch_size - n_samples))
+        batch_label_lst = []
+        for i in range(batch_label.shape[1]):
+            batch_label_lst.append(batch_label[:, i])
+
+        data_batch = mx.io.DataBatch([batch_data], batch_label_lst, pad=(self._batch_size - n_samples))
 
         if batch_idx is None:
             return data_batch

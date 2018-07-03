@@ -153,7 +153,6 @@ def transform_test_multi_crop(im, cfg):
 def transform(im, cfg, do_aug, do_crop):
 
     target_shape = tuple(cfg.INPUT_SHAPE)
-
     im = im.astype(np.float32, copy=False)
 
     # prepare size
@@ -220,7 +219,6 @@ def transform(im, cfg, do_aug, do_crop):
 
     # move crop
     if do_aug and cfg.TRAIN.DISTORT.USE_CROP and np.random.randint(0, 2):
-
         ratio = cfg.TRAIN.DISTORT.CROP_REGION
         ratio = max(0., ratio)
         ratio = min(1., ratio)
@@ -315,6 +313,26 @@ def transform(im, cfg, do_aug, do_crop):
         # check bounds
         im = cv2.threshold(im, 255, 255, cv2.THRESH_TRUNC)[1]
         im = cv2.threshold(im, 0, 0, cv2.THRESH_TOZERO)[1]
+
+    # invert color per channel
+    to_go = np.random.uniform(0, 1) < cfg.TRAIN.DISTORT.INVERT_PROB
+    if do_aug and cfg.TRAIN.DISTORT.USE_INVERT and to_go:
+        ch = np.random.randint(3)
+        im[:, :, ch] = 255 - im[:, :, ch]
+
+    # shuffle channels
+    to_go = np.random.uniform(0, 1) < cfg.TRAIN.DISTORT.CHANNEL_SHUFFLE_PROB
+    if do_aug and cfg.TRAIN.DISTORT.USE_CHANNEL_SHUFFLE and to_go:
+        im_b = im[:, :, 0]
+        im_g = im[:, :, 1]
+        im_r = im[:, :, 2]
+
+        ch_list = [im_b, im_g, im_r]
+        np.random.shuffle(ch_list)
+
+        im[:, :, 0] = ch_list[0]
+        im[:, :, 1] = ch_list[1]
+        im[:, :, 2] = ch_list[2]
 
     # grayscale
     to_go = np.random.uniform(0, 1) < cfg.TRAIN.DISTORT.GRAYSCALE_PROB

@@ -58,21 +58,6 @@ def expand_bbox(bbox, scale):
     bbox[3] = int(bbox_new_size)
     return bbox
 
-def print_class_statistics(dataset, cfg):
-
-    classes = np.zeros((cfg.CLS_NUM+1,), dtype=np.int32)
-    for s in dataset._samples:
-        label = s.get_label(use_argmax=True)
-        if label is None:
-            classes[-1] += 1
-        else:
-            classes[label] += 1
-
-    print('statistics:')
-    for i in range(cfg.CLS_NUM):
-        print('class {}: {}'.format(i, classes[i]))
-    print('vote failed: {}'.format(classes[-1]))
-
 def resize_image(im, scale=240):
     min_side = min(im.shape[:2])
     if min_side == scale:

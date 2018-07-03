@@ -6,12 +6,12 @@ from os import mkdir
 import argparse
 from config import cfg, cfg_from_file
 from iterators import ClsIter, MxIterWrapper
-from utils import print_class_statistics
 from callbacks import SpeedometerCustom, BestModelCheckpoint
 from module import CustomModule
 from mxnet import metric as mxmetric
 from datasets import CollectionDataset
 from image_sample import SampleWithCache
+from metrics import CaptchaAccuracy
 
 import logging
 logging.getLogger().setLevel(logging.INFO)
@@ -88,8 +88,6 @@ def solve():
     else:
         val_n_samples = 0
 
-    print_class_statistics(train_dataset, cfg)
-
     print('total train samples: {}'.format(train_n_samples))
     print('total validation samples: {}'.format(val_n_samples))
     print('batch size: {}'.format(cfg.TRAIN.BATCH_SIZE))
@@ -118,7 +116,8 @@ def solve():
     if cfg.PLOT_GRAPH:
         graph_shapes = {}
         graph_shapes['data'] = train_iter.provide_data[0][1]
-        graph_shapes['label'] = train_iter.provide_label[0][1]
+        for i in range(cfg.MAX_LABELS):
+            graph_shapes['softmax{}_label'.format(i)] = train_iter.provide_label[i][1]
         graph = mx.viz.plot_network(symbol=sym_model, shape=graph_shapes)
         graph.format = 'png'
         graph.render('{}/graph'.format(exp_dir))
@@ -131,15 +130,11 @@ def solve():
     epoch_end_callbacks = [checkpoint_callback]
 
     # metrics
-    acc_metric = mx.metric.Accuracy(output_names=['top_output'])
-    loss_metric = mx.metric.CrossEntropy(output_names=['top_output'])
-    comp_metric = mx.metric.CompositeEvalMetric([acc_metric, loss_metric])
-    eval_metric = comp_metric
+    acc_metric = CaptchaAccuracy(cfg)
+    eval_metric = acc_metric
 
-    val_acc_metric = mx.metric.Accuracy()
-    val_loss_metric = mx.metric.CrossEntropy()
-    val_comp_metric = mx.metric.CompositeEvalMetric([val_acc_metric, val_loss_metric])
-    validation_metric = val_comp_metric
+    val_acc_metric = CaptchaAccuracy(cfg)
+    validation_metric = val_acc_metric
 
     metric_checkpoint_name = 'accuracy'
 
@@ -148,7 +143,7 @@ def solve():
     best_model_checkpoint_callbacks = [best_model_checkpoint_callback]
 
     eval_interval = cfg.VALIDATION.INTERVAL if cfg.VALIDATION.REPORT_INTERMEDIATE else None
-    label_names = ('label',)
+    label_names = ['softmax{}_label'.format(i) for i in range(cfg.MAX_LABELS+1)]
     model = CustomModule(symbol=sym_model, label_names=label_names,
                          context=devices)
     model.bind(data_shapes=train_iter.provide_data, label_shapes=train_iter.provide_label)

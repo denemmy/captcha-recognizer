@@ -16,7 +16,7 @@ class SampleWithCache:
 
         if cfg.INPUT_FORMAT.FORMAT == 'labels':
             labels = [int(l) for l in annotation]
-            assert len(labels) <= cfg.MAX_LABELS
+            assert len(labels) <= cfg.MAX_LABELS and len(labels) >= cfg.MIN_LABELS
             self._labels = labels
         else:
             raise NotImplementedError

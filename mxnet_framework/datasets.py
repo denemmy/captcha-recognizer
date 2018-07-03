@@ -31,7 +31,6 @@ class CollectionDataset(dataset.Dataset):
         print('loading csv (number of workers: {})..'.format(self._csv_workers))
         tic = time.time()
         self._samples = load_samples(db_params, self._cfg, self._csv_workers)
-        self._filter_samples()
         print('parsing finished in {:.3} sec'.format(time.time() - tic))
 
     def __getitem__(self, idx):
@@ -40,9 +39,9 @@ class CollectionDataset(dataset.Dataset):
         labels_orig = sample.get_label()
         n_orig = len(labels_orig)
         if n_orig < self._cfg.MAX_LABELS:
-            labels = labels_orig + [-1] * (self._cfg.MAX_LABELS - n_orig) + [n_orig]
+            labels = labels_orig + [-1] * (self._cfg.MAX_LABELS - n_orig) + [n_orig - self._cfg.MIN_LABELS]
         else:
-            labels = labels_orig + [n_orig]
+            labels = labels_orig + [n_orig - self._cfg.MIN_LABELS]
 
         img = transform(img, self._cfg, self._is_train, not self._prepared)
         if self._debug_imgs:
@@ -68,8 +67,9 @@ class CollectionDataset(dataset.Dataset):
         im = convert_color_space(im, self._cfg, inverse=True)
         im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
 
-        # imname_n = '{}_{}'.format(label, basename(imname))
-        cv2.imwrite(join(self._debug_imgs, imname), im)
+        label_str = '.'.join([str(l) for l in label])
+        imname_n = '{}_{}'.format(label_str, basename(imname))
+        cv2.imwrite(join(self._debug_imgs, imname_n), im)
 
         self._n_debug_images += 1
 
