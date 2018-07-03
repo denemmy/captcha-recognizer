@@ -1,0 +1,14 @@
+*.pyc
+**/__pycache__/
+*.caffemodel
+*.solverstate
+**/logs/
+**/output/
+**/snapshots/
+*.DS_Store
+**/exps/*/*.png
+**/.idea/
+**/visualization/
+**/cache_dir/
+synch/
+.git/
