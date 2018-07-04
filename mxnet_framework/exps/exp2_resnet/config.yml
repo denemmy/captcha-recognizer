@@ -14,8 +14,8 @@ TRAIN:
   EPOCHS: 200
   SNAPSHOT_PERIOD: 100
   DISPLAY_ITERS: 10
-  BATCH_SIZE: 512
-  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp1_simple_train_debug_16'
+  BATCH_SIZE: 128
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp2_resnet_train_debug_16'
   LOADER_WORKERS: 4
   CSV_PARSER_WORKERS: 0
   DISTORT:
@@ -66,17 +66,17 @@ TRAIN:
       TYPE: 'CSV_FILE'
       CSV_FILE: 'train.txt'
 VALIDATION:
-  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp1_simple_val_debug_8'
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp2_resnet_val_debug_8'
   BATCH_SIZE: 128
   REPORT_INTERMEDIATE: True
-  INTERVAL: 500
+  INTERVAL: 360
   DATASETS:
     -
       DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas/'
       TYPE: 'CSV_FILE'
       CSV_FILE: 'test.txt'
 TEST:
-  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp1_simple_test_debug_8'
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp2_resnet_test_debug_8'
   BATCH_SIZE: 128
   DATASETS:
     -

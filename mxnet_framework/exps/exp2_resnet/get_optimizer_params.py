@@ -13,7 +13,7 @@ def get_optimizer_params(total_samples, cfg):
     wd = None
     momentum = None
 
-    base_lr = 0.32
+    base_lr = 0.1
     optimizer = 'nag'
     wd = 1e-4
     momentum = 0.9

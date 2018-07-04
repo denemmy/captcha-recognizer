@@ -73,15 +73,16 @@ def get_model(cfg):
         label = mx.sym.var('softmax{}_label'.format(i))
         labels.append(label)
 
-    depth = 28
+    depth = 16
     k = 8
 
     per_unit = [(depth - 4) // 6]
     filter_list = [16, 16 * k, 32 * k, 64 * k]
     bottle_neck = False
     units = per_unit * 3
+    dropout = 0.3
 
-    net = resnet(units=units, num_stage=3, filter_list=filter_list, bottle_neck=bottle_neck)
+    net = resnet(units=units, num_stage=3, filter_list=filter_list, bottle_neck=bottle_neck, dropout=dropout)
 
     top = get_output(net, labels, cfg)
 
