@@ -5,7 +5,7 @@ import mxnet as mx
 from os import mkdir
 import argparse
 from config import cfg, cfg_from_file
-from iterators import ClsIter, MxIterWrapper
+from iterators import MxIterWrapper
 from callbacks import SpeedometerCustom, BestModelCheckpoint
 from module import CustomModule
 from mxnet import metric as mxmetric
