@@ -31,8 +31,12 @@ class ClsIter(mx.io.DataIter):
         self._data_shape = (self._channel_num, cfg.INPUT_SHAPE[1], cfg.INPUT_SHAPE[0])
 
         self._provide_data = [(data_name, (self._batch_size,) + self._data_shape)]
-        self._provide_label = [('{}_{}'.format(label_name, i),
-                                (self._batch_size, )) for i in range(cfg.MAX_LABELS + 1)]
+
+        # self._provide_label = [('{}{}_label'.format(label_name, i),
+        #                        (self._batch_size,)) for i in range(cfg.MAX_LABELS + 1)]
+
+        self._provide_label = [('{}{}_label'.format(label_name, i),
+                                (self._batch_size,)) for i in range(cfg.MAX_LABELS)]
 
         # make debug directory
         self._debug_imgs = cfg.TRAIN.DEBUG_IMAGES if self._is_train else test_cfg.DEBUG_IMAGES
@@ -42,9 +46,20 @@ class ClsIter(mx.io.DataIter):
 
         # load samples
         self._samples = load_samples(db_params, self._cfg, self._csv_workers)
+        self._filter_samples()
 
         self._init_iter_once()
         self._init_iter()
+
+    def _filter_samples(self):
+        cfg = self._cfg
+        samples = self._samples
+        n_before_filt = len(samples)
+        # filter
+        samples = [s for s in samples if len(s.get_label()) >= cfg.MIN_LABELS and len(s.get_label()) <= cfg.MAX_LABELS]
+        n_after_filr = len(samples)
+        print('checking samples labels, filter: {} --> {}'.format(n_before_filt, n_after_filr))
+        self._samples = samples
 
     def _init_iter_once(self):
 
@@ -110,10 +125,12 @@ class ClsIter(mx.io.DataIter):
                 im = sample.get_data()
                 labels_orig = sample.get_label()
                 n_orig = len(labels_orig)
-                if n_orig < self._cfg.MAX_LABELS:
-                    labels = labels_orig + [-1] * (self._cfg.MAX_LABELS - n_orig) + [n_orig]
-                else:
-                    labels = labels_orig + [n_orig]
+                labels = list(labels)
+
+                # if n_orig < self._cfg.MAX_LABELS:
+                #     labels = labels_orig + [-1] * (self._cfg.MAX_LABELS - n_orig) + [n_orig]
+                # else:
+                #     labels = labels_orig + [n_orig]
 
                 imname = basename(sample.id)
 
@@ -197,8 +214,12 @@ class MxIterWrapper(mx.io.DataIter):
         self._data_shape = (self._channel_num, cfg.INPUT_SHAPE[1], cfg.INPUT_SHAPE[0])
 
         self._provide_data = [(data_name, (self._batch_size,) + self._data_shape)]
+
+        # self._provide_label = [('{}{}_label'.format(label_name, i),
+        #                        (self._batch_size,)) for i in range(cfg.MAX_LABELS + 1)]
+
         self._provide_label = [('{}{}_label'.format(label_name, i),
-                               (self._batch_size,)) for i in range(cfg.MAX_LABELS + 1)]
+                                (self._batch_size,)) for i in range(cfg.MAX_LABELS)]
 
         self._input_dataset = input_dataset
         self._num_workers = num_workers

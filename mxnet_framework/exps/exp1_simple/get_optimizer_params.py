@@ -13,13 +13,18 @@ def get_optimizer_params(total_samples, cfg):
     wd = None
     momentum = None
 
-    base_lr = 0.001
-    optimizer = 'adam'
+    base_lr = 0.1
+    optimizer = 'nag'
     wd = 1e-4
-    # momentum = 0.9
+    momentum = 0.9
     factor_d = 0.1
-    epochs_steps = [8, 16, 24]
-    epochs_steps = [64, 128, 256]
+    epochs_steps = [128, 256, 384]
+
+    # base_lr = 0.001
+    # optimizer = 'adam'
+    # wd = 1e-5
+    # factor_d = 0.1
+    # epochs_steps = [60, 80, 120, 160]
 
     iters_per_epoch = int(total_samples / cfg.TRAIN.BATCH_SIZE)
     iters_per_epoch += 1 if total_samples % cfg.TRAIN.BATCH_SIZE > 0 else 0
