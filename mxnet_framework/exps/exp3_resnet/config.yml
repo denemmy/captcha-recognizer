@@ -85,6 +85,6 @@ TEST:
       DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas_fixed/'
       TYPE: 'CSV_FILE'
       CSV_FILE: 'samples.txt'
-      OUTPUT_DIR: '/home/ubuntu/projects/data/captcha/visualization/exp3_resnet_labeled_captchas_errors_3'
-      VISUALIZE: True
-      APPEND_EPOCH: True
+      # OUTPUT_DIR: '/home/ubuntu/projects/data/captcha/visualization/exp3_resnet_labeled_captchas_errors_5'
+      # VISUALIZE: True
+      # APPEND_EPOCH: True
