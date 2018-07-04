@@ -11,11 +11,13 @@ GPU_IDS: [0, 1, 2, 3]
 MAX_DEBUG_IMAGES: 50
 PLOT_GRAPH: True
 TRAIN:
-  EPOCHS: 200
+  PRETRAINED: '/home/ubuntu/projects/captcha-recognizer/mxnet_framework/exps/exp2_resnet/snapshots/model-best'
+  PRETRAINED_EPOCH: 0
+  EPOCHS: 100
   SNAPSHOT_PERIOD: 100
   DISPLAY_ITERS: 10
   BATCH_SIZE: 128
-  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp2_resnet_train_debug_16'
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp3_resnet_train_debug_16'
   LOADER_WORKERS: 4
   CSV_PARSER_WORKERS: 0
   DISTORT:
@@ -58,7 +60,7 @@ TRAIN:
     LOW_RES_FACTOR_MAX: 1.8
   DATASETS:
     -
-      DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas/'
+      DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas_fixed/'
       TYPE: 'CSV_FILE'
       CSV_FILE: 'train.txt'
     -
@@ -66,23 +68,23 @@ TRAIN:
       TYPE: 'CSV_FILE'
       CSV_FILE: 'train.txt'
 VALIDATION:
-  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp2_resnet_val_debug_8'
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp3_resnet_val_debug_8'
   BATCH_SIZE: 128
   REPORT_INTERMEDIATE: True
   INTERVAL: 360
   DATASETS:
     -
-      DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas/'
+      DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas_fixed/'
       TYPE: 'CSV_FILE'
       CSV_FILE: 'test.txt'
 TEST:
-  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp2_resnet_test_debug_8'
+  # DEBUG_IMAGES: '/home/ubuntu/projects/data/captcha/visualization/exp3_resnet_test_debug_8'
   BATCH_SIZE: 64
   DATASETS:
     -
       DB_PATH: '/home/ubuntu/projects/data/captcha/labeled_captchas_fixed/'
       TYPE: 'CSV_FILE'
-      CSV_FILE: 'test.txt'
-      # OUTPUT_DIR: '/home/ubuntu/projects/data/captcha/visualization/exp2_resnet_labeled_captchas_errors_3'
-      # VISUALIZE: True
-      # APPEND_EPOCH: True
+      CSV_FILE: 'samples.txt'
+      OUTPUT_DIR: '/home/ubuntu/projects/data/captcha/visualization/exp3_resnet_labeled_captchas_errors_3'
+      VISUALIZE: True
+      APPEND_EPOCH: True

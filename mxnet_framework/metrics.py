@@ -207,7 +207,6 @@ class CaptchaAccuracy(mx.metric.EvalMetric):
         preds_ch = preds
         batch_size = preds_ch[0].shape[0]
 
-        # find max prob for each character
         pred_labels = np.zeros((batch_size, len(preds)), dtype=np.int32)
         for i in range(len(preds)):
             prob_i = preds[i].asnumpy()

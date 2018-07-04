@@ -95,5 +95,15 @@ def prepare_crop(im, prepare_sz):
         im = cv2.resize(im, prepare_sz, interpolation=interp)
     return im
 
+def code_to_symbol(code):
+    if code < 10:
+        return chr(ord('0') + code)
+    else:
+        return chr(ord('A') + code - 10)
+
+def get_symbols_from_codes(codes):
+    return ''.join([code_to_symbol(code) for code in codes])
+
+
 
 

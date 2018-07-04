@@ -12,8 +12,9 @@ from tqdm import tqdm
 from transform import convert_color_space
 from metrics import CaptchaAccuracy
 from datasets import CollectionDataset
+from utils import get_symbols_from_codes
 
-def visualize_result(images, imnames, gt_labels, pr_labels, output_dir, cfg, only_error = True):
+def visualize_result(images, imnames, gt_labels, pr_labels, output_dir, cfg, only_error=True):
 
     n_samples = len(images)
     assert(n_samples == len(imnames))
@@ -24,10 +25,15 @@ def visualize_result(images, imnames, gt_labels, pr_labels, output_dir, cfg, onl
 
         vis_img = images[si]
         imname_orig = imnames[si]
-        gt_label = gt_labels[si]
-        pr_label = pr_labels[si]
+        gt_label = gt_labels[si,:]
+        pr_label = pr_labels[si,:]
 
-        if only_error and gt_label == pr_label:
+        gt_label_str = get_symbols_from_codes(gt_label)
+        pr_label_str = get_symbols_from_codes(pr_label)
+
+        corr_mask = gt_label == pr_label
+
+        if only_error and corr_mask.all():
             continue
 
         dst_h = cfg.INPUT_SHAPE[1]
@@ -37,11 +43,9 @@ def visualize_result(images, imnames, gt_labels, pr_labels, output_dir, cfg, onl
         vis_img = convert_color_space(vis_img, cfg, inverse=True)
         vis_img = cv2.resize(vis_img, (0, 0), fx=fx, fy=fy)
 
-        diff_val = np.sum(np.abs(gt_label - pr_label))
+        imname = '[gt]{}_[pr]{}_[im]{}'.format(gt_label_str, pr_label_str, imname_orig)
+        cv2.imwrite(join(output_dir, imname), vis_img)
 
-        if gt_label != pr_label:
-            imname = '{}diff_{}'.format(diff_val, imname_orig)
-            cv2.imwrite(join(output_dir, imname), vis_img)
 
 def test_net(net, model_id, test_cfg, cfg):
 
@@ -86,7 +90,6 @@ def test_net(net, model_id, test_cfg, cfg):
 
         gt_labels_all = None
         pr_labels_all = None
-        pr_probs_all = None
         imnames_all = None
 
         n_samples = len(test_iter)
@@ -100,7 +103,36 @@ def test_net(net, model_id, test_cfg, cfg):
                 samples_idx = list(samples_idx.asnumpy())
                 imnames = [basename(test_dataset.get_imname(sid)) for sid in samples_idx]
                 net.forward(test_batch, is_train=False)
-                eval_metric.update(labels=test_batch.label, preds=net.get_outputs())
+
+                preds = net.get_outputs()
+                labels = test_batch.label
+                batch_size = len(samples_idx)
+
+                eval_metric.update(labels=labels, preds=preds)
+
+                pr_labels = np.zeros((batch_size, len(preds)), dtype=np.int32)
+                for i in range(len(preds)):
+                    prob_i = preds[i].asnumpy()
+                    maxprob_arg_i = np.argmax(prob_i, axis=1)
+                    pr_labels[:, i] = maxprob_arg_i.astype(np.int32)
+
+                gt_labels = np.zeros((batch_size, len(labels)), dtype=np.int32)
+                for i in range(len(labels)):
+                    curr_labels = labels[i].asnumpy()
+                    gt_labels[:, i] = curr_labels.astype(np.int32)
+
+                gt_labels_all = gt_labels if gt_labels_all is None else np.concatenate((gt_labels_all, gt_labels))
+                pr_labels_all = pr_labels if pr_labels_all is None else np.concatenate((pr_labels_all, pr_labels))
+                imnames_all = imnames if imnames_all is None else imnames_all + imnames
+
+                # visualize results
+                if output_dir is not None and do_visualize:
+                    imgs = test_batch.data[0]
+                    imgs = mx.nd.transpose(imgs, axes=(0, 2, 3, 1))
+                    imgs = imgs.asnumpy()
+
+                    visualize_result(imgs, imnames, gt_labels, pr_labels, output_dir, cfg)
+
                 progress_bar.update(1)
 
         print('test results:')

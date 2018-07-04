@@ -31,5 +31,5 @@ else
 fi
 
 echo ${NET_FINAL}
-python3 test.py --exp-name ${EXP_NAME} --model ${NET_FINAL} --gpus 0,1,2,3
+python3 test.py --exp-name ${EXP_NAME} --model ${NET_FINAL} --gpus 1
 
