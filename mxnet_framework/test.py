@@ -158,7 +158,7 @@ def parse_args():
     """
     Parse input arguments
     """
-    parser = argparse.ArgumentParser(description='Train Segmentation network')
+    parser = argparse.ArgumentParser(description='Test network')
     parser.add_argument('--gpus', dest='gpu_ids',
                         help='GPU device id to use 0,1,2', type=str)
     parser.add_argument('--exp-name', dest='exp_name', required=True, type=str)
