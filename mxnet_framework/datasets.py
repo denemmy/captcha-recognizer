@@ -51,11 +51,6 @@ class CollectionDataset(dataset.Dataset):
         n_orig = len(labels_orig)
         labels = list(labels_orig)
 
-        # if n_orig < self._cfg.MAX_LABELS:
-        #     labels = labels_orig + [-1] * (self._cfg.MAX_LABELS - n_orig) + [n_orig - self._cfg.MIN_LABELS]
-        # else:
-        #     labels = labels_orig + [n_orig - self._cfg.MIN_LABELS]
-
         img = transform(img, self._cfg, self._is_train, not self._prepared)
         if self._debug_imgs:
             self._debug_image(img, labels_orig, sample.id)

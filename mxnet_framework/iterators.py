@@ -24,9 +24,6 @@ class MxIterWrapper(mx.io.DataIter):
 
         self._provide_data = [(data_name, (self._batch_size,) + self._data_shape)]
 
-        # self._provide_label = [('{}{}_label'.format(label_name, i),
-        #                        (self._batch_size,)) for i in range(cfg.MAX_LABELS + 1)]
-
         self._provide_label = [('{}{}_label'.format(label_name, i),
                                 (self._batch_size,)) for i in range(cfg.MAX_LABELS)]
 

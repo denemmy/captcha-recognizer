@@ -116,8 +116,6 @@ def solve():
     if cfg.PLOT_GRAPH:
         graph_shapes = {}
         graph_shapes['data'] = train_iter.provide_data[0][1]
-        # for i in range(cfg.MAX_LABELS+1):
-        #     graph_shapes['softmax{}_label'.format(i)] = train_iter.provide_label[i][1]
         for i in range(cfg.MAX_LABELS):
             graph_shapes['softmax{}_label'.format(i)] = train_iter.provide_label[i][1]
         graph = mx.viz.plot_network(symbol=sym_model, shape=graph_shapes)
@@ -145,7 +143,6 @@ def solve():
     best_model_checkpoint_callbacks = [best_model_checkpoint_callback]
 
     eval_interval = cfg.VALIDATION.INTERVAL if cfg.VALIDATION.REPORT_INTERMEDIATE else None
-    # label_names = ['softmax{}_label'.format(i) for i in range(cfg.MAX_LABELS+1)]
     label_names = ['softmax{}_label'.format(i) for i in range(cfg.MAX_LABELS)]
     model = CustomModule(symbol=sym_model, label_names=label_names,
                          context=devices)

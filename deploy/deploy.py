@@ -1,10 +1,8 @@
 import sys
 import numpy as np
 import mxnet as mx
-from os import mkdir, makedirs
-from os.path import join, isdir, basename, dirname, splitext
+from os.path import join, basename
 import argparse
-import cv2
 import tqdm
 
 from datasets import CollectionDataset

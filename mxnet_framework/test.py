@@ -56,7 +56,6 @@ def test_net(net, model_id, test_cfg, cfg):
         output_dir = None
         prepared = False
         do_visualize = False
-        save_probs = False
 
         if 'OUTPUT_DIR' in dataset:
             output_dir = dataset['OUTPUT_DIR']
@@ -138,21 +137,6 @@ def test_net(net, model_id, test_cfg, cfg):
         print('test results:')
         for name, val in eval_metric.get_name_value():
             print('{}: {:.5f}'.format(name, val))
-
-        # if output_dir is not None and 'RESULT_FILE' in dataset:
-        #     output_path = join(output_dir, dataset['RESULT_FILE'])
-        #     n_samples = len(imnames_all)
-        #     assert(n_samples == pr_labels_all.shape[0])
-        #     with open(output_path, 'w') as fp:
-        #         for si in range(n_samples):
-        #             imname = imnames_all[si]
-        #             if save_probs:
-        #                 pr_probs = pr_probs_all[si]
-        #                 pr_label_str = ';'.join(['{:.4}'.format(p) for p in pr_probs])
-        #             else:
-        #                 pr_labels = pr_labels_all[si]
-        #                 pr_label_str = ';'.join([str(l) for l in pr_labels])
-        #             fp.write('{};{}\n'.format(imname, pr_label_str))
 
 def parse_args():
     """

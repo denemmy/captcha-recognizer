@@ -133,21 +133,6 @@ class CaptchaAccuracyVarLen(mx.metric.EvalMetric):
         self._good_ch += corr_c
         self._total_ch += total_c
 
-        #
-        # pred_descr = pred_descr.asnumpy()  # (n, descriptor len)
-        # label = label.asnumpy().astype('int32')  # (n, num_attributes)
-        #
-        # assert(label.shape[0] == pred_descr.shape[0])
-        # assert(pred_descr.shape[1] == cfg.DESC_LEN)
-        #
-        # if self._descr_data is None:
-        #     self._descr_data = pred_descr
-        #     self._labels = label
-        # else:
-        #     self._descr_data = np.append(self._descr_data, pred_descr, axis=0)
-        #     self._labels = np.append(self._labels, label, axis=0)
-
-
     def get(self):
         """Gets the current evaluation result.
         Returns
